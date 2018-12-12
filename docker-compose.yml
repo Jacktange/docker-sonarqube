@@ -1,0 +1,35 @@
+version: '2.3'
+networks:
+  bridge:
+    driver: bridge
+services:
+
+  db:
+    image: postgres
+    mem_limit: 2048m
+    restart: "no"
+    networks:
+    - bridge
+    environment:
+      POSTGRES_USER: "sonar"
+      POSTGRES_PASSWORD: "sonar"
+    volumes:
+    - ./postgresql:/var/lib/postgresql
+    ports: 
+    - "5432:5432"
+
+  sonarqube:
+    image: sonarqube
+    mem_limit: 2048m
+    restart: "no"
+    networks:
+    - bridge
+    environment:
+      SONARQUBE_JDBC_URL: "jdbc:postgresql://db:5432/sonar"
+    volumes:
+    - ./sonarqube/extensions/plugins/:/opt/sonarqube/extensions/plugins/
+    depends_on:
+    - db
+    ports: 
+    - "9000:9000"
+
